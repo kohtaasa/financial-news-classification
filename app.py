@@ -14,7 +14,7 @@ from sklearn.metrics import confusion_matrix, classification_report, ConfusionMa
 from streamlit_shap import st_shap
 
 nltk.download('stopwords')
-
+nltk.download('punkt')
 # Function Definitions
 # ------------------------------------------------------------------------------
 
