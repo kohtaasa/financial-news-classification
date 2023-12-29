@@ -13,6 +13,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import confusion_matrix, classification_report, ConfusionMatrixDisplay
 from streamlit_shap import st_shap
 
+nltk.download('stopwords')
+
 # Function Definitions
 # ------------------------------------------------------------------------------
 
