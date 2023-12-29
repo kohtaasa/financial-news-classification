@@ -13,8 +13,16 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import confusion_matrix, classification_report, ConfusionMatrixDisplay
 from streamlit_shap import st_shap
 
-nltk.download('stopwords')
-nltk.download('punkt')
+try:
+    nltk.data.find('corpora/stopwords')
+except LookupError:
+    nltk.download('stopwords')
+
+try:
+    nltk.data.find('tokenizers/punkt')
+except LookupError:
+    nltk.download('punkt')
+
 # Function Definitions
 # ------------------------------------------------------------------------------
 
@@ -59,6 +67,13 @@ def train_model(data: pd.DataFrame) -> tuple:
     logistic_regression = LogisticRegression(C=1.5)
     logistic_regression.fit(X_train_tfidf, y_train)
     return logistic_regression, tfidf_vectorizer, X_test, y_test
+
+
+@st.cache_data
+def predict(_model, _vectorizer, _X_test):
+    X_test_tfidf = vectorizer.transform(X_test).toarray()
+    y_pred = model.predict(X_test_tfidf)
+    return y_pred
 
 
 @st.cache_data
@@ -186,8 +201,8 @@ X_test_reset, y_test_reset = generate_dataset_for_explainer(X_test, y_test)
 
 # Model Evaluation
 st.subheader('Model Evaluation')
+y_pred = predict(model, vectorizer, X_test)
 if st.button('View model evaluation'):
-    y_pred = model.predict(vectorizer.transform(X_test))
     cm = confusion_matrix(y_test, y_pred)
     report = pd.DataFrame(classification_report(y_test, y_pred, output_dict=True)).T
     # Create two columns for the confusion matrix and the report
@@ -230,7 +245,7 @@ if label_selection:
     st_shap(shap.plots.beeswarm(shap_values[:, :, label_dict[label_selection]], max_display=max_display))
 
 # single prediction
-st.subheader("See how features contributed to the model’s prediction for each label.")
-option = st.selectbox('Select a label to generate a prediction', ('negative', 'positive', 'neutral'))
+st.subheader("See how features contributed to the model’s prediction for each label")
+option = st.selectbox('Select a label to generate a prediction (a sample is randomly selected)', ('negative', 'positive', 'neutral'))
 if st.button("Generate a prediction", type="primary"):
     explain_single_predicion(model, vectorizer, df, X_test_reset, y_test_reset, shap_values, option)
