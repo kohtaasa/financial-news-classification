@@ -16,7 +16,9 @@ seaborn = "^0.12.2"
 wordcloud = "^1.9.2"
 nltk = "^3.8.1"
 torch = "^2.1.2"
-shap = "^0.44.0"
+streamlit = "^1.29.0"
+streamlit-shap = "^1.0.2"
+shap = "0.43.0"
 
 
 [build-system]
